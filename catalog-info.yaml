@@ -1,12 +1,38 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Group
 metadata:
   name: tibco-bw6-prompt-library
-  title: TIBCO BW6 Prompt Library
-  description: Prompt library for TIBCO BusinessWorks 6 application examples.
+  description: TIBCO BW6 Prompt Library
+spec:
+  type: organization
+  profile:
+    displayName: TIBCO BW6 Prompt Library
+  children: []
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: tibco-bw6-prompt-library
+  description: A collection of TIBCO BW6 prompt templates and examples
+spec:
+  owner: tibco-bw6-prompt-library
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: tibco-bw6-prompt-library
+  description: TIBCO BW6 Prompt Library for REST, SOAP, JMS, JDBC, File, and Subprocess examples
   annotations:
     backstage.io/techdocs-ref: dir:.
+  tags:
+    - tibco
+    - bw6
+    - prompts
+    - businessworks
+    - integration
+    - documentation
 spec:
-  type: documentation
-  lifecycle: production
-  owner: devhub
+  owner: tibco-bw6-prompt-library
+  domain: tibco-bw6-prompt-library
