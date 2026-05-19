@@ -1,38 +1,8 @@
 apiVersion: backstage.io/v1alpha1
-kind: Group
+kind: Location
 metadata:
-  name: tibco-bw6-prompt-library
-  description: TIBCO BW6 Prompt Library
+  name: Prompt_Library_POC
+  description: Prompt Library POC
 spec:
-  type: organization
-  profile:
-    displayName: TIBCO BW6 Prompt Library
-  children: []
-
----
-apiVersion: backstage.io/v1alpha1
-kind: Domain
-metadata:
-  name: tibco-bw6-prompt-library
-  description: A collection of TIBCO BW6 prompt templates and examples
-spec:
-  owner: tibco-bw6-prompt-library
-
----
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-  name: tibco-bw6-prompt-library
-  description: TIBCO BW6 Prompt Library for REST, SOAP, JMS, JDBC, File, and Subprocess examples
-  annotations:
-    backstage.io/techdocs-ref: dir:.
-  tags:
-    - tibco
-    - bw6
-    - prompts
-    - businessworks
-    - integration
-    - documentation
-spec:
-  owner: tibco-bw6-prompt-library
-  domain: tibco-bw6-prompt-library
+  targets:
+    - ./bwce-basics-learning-guide.yaml
