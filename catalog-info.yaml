@@ -5,4 +5,4 @@ metadata:
   description: Prompt Library POC
 spec:
   targets:
-    - ./bwce-basics-learning-guide.yaml
+    - ./prompt_lib_poc.yaml
