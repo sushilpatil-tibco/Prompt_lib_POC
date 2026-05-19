@@ -1,6 +1,6 @@
 # TIBCO BW6 Prompt Library
 
-This repository contains a DevHub / TechDocs-ready prompt library for TIBCO BusinessWorks 6 examples.
+This repository contains a BW6 Design Assistant -ready prompt library for TIBCO BusinessWorks 6 examples.
 
 ## Files included
 
