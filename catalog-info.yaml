@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: tibco-bw6-prompt-library
+  title: TIBCO BW6 Prompt Library
+  description: Prompt library for TIBCO BusinessWorks 6 application examples.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: documentation
+  lifecycle: production
+  owner: devhub
