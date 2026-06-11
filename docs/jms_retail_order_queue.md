@@ -1,42 +1,82 @@
-# JMS-Retail_Order_queue
+# Retail_Order_Queue
 
-> Copy this prompt into your AI assistant to generate or guide a TIBCO BW6 implementation.
+**Target Runtime:** TIBCO ActiveMatrix BusinessWorks™ 6.x
 
-```text
-JMS-Retail_Order_queue
-Create a new BW application named "Retail_Order_Queue".
-Create JNDI configuration:
-Provider: TIBCO EMS
-Initial Context Factory:
- com.tibco.tibjms.naming.TibjmsInitialContextFactory
-URL:
- tibjmsnaming://localhost:7222
-Create JMS Connection shared resource:
-Name: RetailJMSConnection
-Messaging Style: Queue
-JNDI Configuration:
- retail.jms.EMSConfig
-Create module properties:
-QUEUE_NAME : String : retail.orders.queue
-OUTPUT_FILE : String : C:\tmp\RetailOrders\orders.log
-Create process:
-Name: ReceiveRetailOrder
-Add and link activities:
-JMS Receive Message
-Log
-Write File
-Reply to JMS Message
-Configure JMS Receive Message:
-Destination = retail.orders.queue
-Messaging Style = Queue
-JMS Connection = RetailJMSConnection
-Configure Log activity:
-Message =
- concat("Retail order received:",$JMSReceiveMessage/Body)
-Configure Write File:
-Filename = $OUTPUT_FILE
-Append = true
-Create Non Existing Directories = true
-Configure Reply to JMS Message:
-Body = "Retail order processed successfully"
-```
+**Description:** A retail order processing application that receives incoming orders from a JMS queue, logs order details to a file, and replies with a confirmation message.
+
+---
+
+## 1. Project Hierarchy
+
+| Component Type | Name |
+| :---- | :---- |
+| **Application Module** | `Retail_Order_Queue` |
+| **Application Project** | `Retail_Order_Queue.application` |
+
+---
+
+## 2. Module Properties Configuration
+
+Create and Configure the following module properties:
+
+| Property Name | Data Type | Value |
+| :---- | :---- | :---- |
+| QUEUE\_NAME | String | retail.orders.queue |
+| OUTPUT\_FILE | String | C:\tmp\RetailOrders\orders.log |
+
+---
+
+## 3. Shared Resources
+
+### JNDI Configuration
+
+**Name:** EMSConfig
+
+* **Configure attributes in shared resource `retail.jms.EMSConfig`**
+  * "Provider" with value `TIBCO EMS`
+  * "Initial Context Factory" with value `com.tibco.tibjms.naming.TibjmsInitialContextFactory`
+  * "Provider URL" with value `tibjmsnaming://localhost:7222`
+
+### JMS Connection
+
+**Name:** RetailJMSConnection
+
+* **Configure attributes in shared resource `Retail_Order_Queue.RetailJMSConnection`**
+  * "Messaging Style" with value `Queue`
+  * "JNDI Configuration" with value `retail.jms.EMSConfig`
+
+---
+
+## 4. Process Logic
+
+**Process Name: ReceiveRetailOrder.bwp**
+
+### Create below activities in sequence & link them
+
+`JMS Receive Message` → `Log` → `Write File` → `Reply to JMS Message` and all should be linked with each other.
+
+### Activity Configurations as below
+
+#### Activity 1: JMS Receive Message (Starter)
+
+* **Configure attribute**
+  * "JMS Connection" with `Retail_Order_Queue.RetailJMSConnection`
+  * "Messaging Style" with value `Queue`
+  * "Destination" with module property `QUEUE_NAME`
+
+#### Activity 2: Log
+
+* **Configure node**
+  * `message` ➔ `concat("Retail order received: ", $JMSReceiveMessage/Body)`
+
+#### Activity 3: Write File
+
+* **Configure attribute**
+  * `FileName` with module property `OUTPUT_FILE`
+  * `Append` with value `true`
+  * `Create Non Existing Directories` with value `true`
+
+#### Activity 4: Reply to JMS Message
+
+* **Configure node**
+  * `Body` ➔ `"Retail order processed successfully"`
