@@ -1,62 +1,148 @@
-# Basic Retail Order Logger
+# Project Specification: Retail_Order_Logger
 
-> Copy this prompt into your AI assistant to generate or guide a TIBCO BW6 implementation.
+## Project Overview
 
-```text
-Basic Retail Order Logger
-Create a new BW application project named Retail_Order_Logger. Within this project, perform the following tasks:
-1. Create a Process
-Name: OrderProcess
-Location: retail_order_logger package
-Add the following activities in sequence and link them:
-Timer: To initiate the process
-Log: To log the start of order processing
-Mapper: To map retail order details
-Log: To log mapped order information
-CallProcess: To call the order validation subprocess
-Log: To log the end of the process
-Link all activities.
-2. Create a Subprocess
-Name: ValidateOrder
-Location: retail_order_logger package
-Add the following activities and link them:
-Start
-Log: Add Log after Start activity
-Log1: Add Log1 after Log activity
-End
-Link all activities.
-3. Schemas and Resources
-Copy schema from:
- C:\Retail\TestData\RetailOrderSchema.xsd
-4. Module Properties
-Create the following module properties as per their type:
-Name: orderStoreId, Type: Long, Value: 10001
-Name: defaultOrderId, Type: Integer, Value: 501
-Name: enableOrderValidation, Type: Boolean, Value: true
-Name: orderApiPassword, Type: Password, Value: Retail@123
-Create a new group retailGroup with:
-Name: storeName
-Type: String
-Value: RetailMart
-5. Configure Activities from Main Process OrderProcess.bwp
-For Log activity, configure input element message with value:
-$Timer/Time
-For Mapper activity, configure schema RetailOrderSchema.xsd. After schema configuration, configure the input elements as:
-orderName
-with value:
-$_processContext/ApplicationName
-orderId
-with value:
-xsd:integer(bw:getModuleProperty("defaultOrderId"))
-For Log1, configure input element message with value:
-$Mapper/tns:orderName
-For CallProcess, configure attribute Process Name with value:
-ValidateOrder.bwp
-For Log2, map input element message with value:
-bw:getModuleProperty("orderApiPassword")
-6. Configure Activities from Subprocess ValidateOrder.bwp
-For Log, map input element message with value:
-bw:getModuleProperty("BW.PROCESS.NAME")
-For Log1, map input element message with value:
-bw:getModuleProperty("/retailGroup/storeName")
+| Field | Value |
+| :---- | :---- |
+| **Application Module Name** | `Retail_Order_Logger` |
+| **Application Name** | `Retail_Order_Logger.application` |
+
+---
+
+## A. Module Properties Configuration
+
+Create and Configure the following module properties:
+
+| Property Name | Data Type | Value |
+| :---- | :---- | :---- |
+| orderStoreId | Long | 10001 |
+| defaultOrderId | Integer | 501 |
+| enableOrderValidation | Boolean | true |
+| orderApiPassword | Password | Retail@123 |
+
+Create a new group **retailGroup** with the following property:
+
+| Property Name | Data Type | Value |
+| :---- | :---- | :---- |
+| storeName | String | RetailMart |
+
+---
+
+## B. Schemas and Resources
+
+Copy the following schema into the project:
+
+**Name:** RetailOrderSchema.xsd
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.tibco.com/retail/order"
+           xmlns:tns="http://www.tibco.com/retail/order"
+           elementFormDefault="qualified">
+
+    <xs:element name="RetailOrder" type="tns:RetailOrderType"/>
+
+    <xs:complexType name="RetailOrderType">
+        <xs:sequence>
+            <xs:element name="orderName"    type="xs:string"/>
+            <xs:element name="orderId"      type="xs:integer"/>
+            <xs:element name="storeId"      type="xs:long"/>
+            <xs:element name="orderDate"    type="xs:dateTime"/>
+            <xs:element name="orderStatus"  type="xs:string"/>
+            <xs:element name="customerInfo" type="tns:CustomerInfoType"/>
+            <xs:element name="orderItems"   type="tns:OrderItemsType"/>
+            <xs:element name="orderTotal"   type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CustomerInfoType">
+        <xs:sequence>
+            <xs:element name="customerId"    type="xs:integer"/>
+            <xs:element name="customerName"  type="xs:string"/>
+            <xs:element name="customerEmail" type="xs:string"/>
+            <xs:element name="customerPhone" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="OrderItemsType">
+        <xs:sequence>
+            <xs:element name="item" type="tns:OrderItemType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="OrderItemType">
+        <xs:sequence>
+            <xs:element name="itemId"       type="xs:integer"/>
+            <xs:element name="itemName"     type="xs:string"/>
+            <xs:element name="quantity"     type="xs:integer"/>
+            <xs:element name="unitPrice"    type="xs:decimal"/>
+            <xs:element name="totalPrice"   type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
 ```
+
+---
+
+## C. Process Architecture
+
+### Process Inventory
+
+| Package Name | Process Name |
+| :---- | :---- |
+| `retail_order_logger` | `OrderProcess.bwp` |
+| `retail_order_logger` | `ValidateOrder.bwp` |
+
+---
+
+## D. Process Implementation
+
+### 1. OrderProcess.bwp
+
+**Activities:** `Timer` → `Log` → `Mapper` → `Log1` → `CallProcess` → `Log2`
+
+Link all activities in sequence.
+
+**Configurations:**
+
+* **Log:**
+  * Configure node:
+    * **Input > ActivityInput > message:** `$Timer/Time`
+
+* **Mapper:**
+  * Configure schema: `RetailOrderSchema.xsd`
+  * After schema configuration, configure nodes:
+    * **orderName:** `$_processContext/ApplicationName`
+    * **orderId:** `xsd:integer(bw:getModuleProperty("defaultOrderId"))`
+
+* **Log1:**
+  * Configure node:
+    * **Input > ActivityInput > message:** `$Mapper/tns:orderName`
+
+* **CallProcess:**
+  * Configure attribute:
+    * **Process Name:** `ValidateOrder.bwp`
+
+* **Log2:**
+  * Configure node:
+    * **Input > ActivityInput > message:** `bw:getModuleProperty("orderApiPassword")`
+
+---
+
+### 2. ValidateOrder.bwp
+
+**Activities:** `Start` → `Log` → `Log1` → `End`
+
+Link all activities in sequence.
+
+**Configurations:**
+
+* **Log:**
+  * Configure node:
+    * **Input > ActivityInput > message:** `bw:getModuleProperty("BW.PROCESS.NAME")`
+
+* **Log1:**
+  * Configure node:
+    * **Input > ActivityInput > message:** `bw:getModuleProperty("/retailGroup/storeName")`
